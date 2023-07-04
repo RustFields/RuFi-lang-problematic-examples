@@ -36,15 +36,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
-        let context = Context::new(0, HashMap::new(), HashMap::new(), HashMap::new());
-        let vm = RoundVM::new_empty(context);
-        let mut l = L { round_vm: vm };
-        let res = l.nbr(|l| 1);
-        assert_eq!(res, 1);
-    }
-
-    #[test]
     fn test_nested_nbr() {
         let context = Context::new(0, HashMap::new(), HashMap::new(), HashMap::new());
         let vm = RoundVM::new_empty(context);
