@@ -1,26 +1,29 @@
+trait Executor {
+    // A mutable reference to self is needed since execute may mutate self.
+    fn execute<A>(&mut self, expr: impl Fn() -> A) -> A;
+}
+
+struct MyStruct { counter: i32 }
+
+impl Executor for MyStruct {
+    fn execute<A>(&mut self, expr: impl Fn() -> A) -> A {
+        self.counter += 1;
+        expr()
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use crate::{Executor, MyStruct};
 
     #[test]
-    fn test_multiple_borrows() {
-        let mut vector = vec![1, 2, 3];
-        let first = &vector[0]; // Immutable borrow
-
-        vector.push(4); // Error: Cannot borrow `vector` as mutable because it is also borrowed as immutable
-
-        println!("The first element is: {}", first);
-    }
-
-    #[test]
-    fn test_with_blocks() {
-        let mut vector = vec![1, 2, 3];
-        //We need to make sure the first borrow is dropped before the second one starts
-        {
-            let first = &vector[0]; // Immutable borrow
-            println!("The first element is: {}", first)
-        }
-
-        vector.push(4);
-        println!("The vector is: {:?}", vector);
+    fn test_nested_borrow() {
+        let mut my_struct = MyStruct { counter: 0 };
+        // This call is legal since the closure doesn't capture my_struct.
+        let res1 = my_struct.execute(|| 1);
+        assert_eq!(res1, 1);
+        // This call is not legal since the closure captures my_struct, causing a borrowing conflict.
+        let res2 = my_struct.execute(|| my_struct.execute(|| 1));
+        assert_eq!(res2, 1);
     }
 }
