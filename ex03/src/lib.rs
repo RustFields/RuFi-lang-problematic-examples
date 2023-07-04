@@ -11,10 +11,12 @@ pub struct L {
 }
 
 impl Language for L {
+    // To allow nested nbr, we need to pass the language to the expr closure.
     fn nbr<A: 'static + Copy>(&mut self, expr: impl Fn(&mut Self) -> A) -> A {
         let vm = &mut self.round_vm;
         let value = match vm.neighbor() {
             Some(nbr) if nbr.clone() != vm.self_id() => {
+                // However, here we need to make a second mutable borrow of the language, causing an error.
                 vm.neighbor_val().unwrap_or(&expr(&mut self)).clone()
             }
             _ => expr(&mut self)
