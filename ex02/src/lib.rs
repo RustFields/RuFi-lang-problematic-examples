@@ -34,6 +34,7 @@ mod tests {
     use rufi_core::core::context::context::Context;
     use super::*;
 
+    // This test will work because there are no borrowing conflicts
     #[test]
     fn it_works() {
         let context = Context::new(0, HashMap::new(), HashMap::new(), HashMap::new());
